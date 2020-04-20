@@ -1,6 +1,7 @@
-# scmunit: unit testing for Scheme done easy
+# scmunit: unit testing for MIT Scheme done easy
 
-scmunit is a lightweight test runner and assertion library written in MIT Scheme (R7RS).
+scmunit is a lightweight test runner and assertion library written in and for MIT Scheme (R7RS).
+
 
 ## Example
 
@@ -9,7 +10,7 @@ scmunit is a lightweight test runner and assertion library written in MIT Scheme
 
 (define (increment x) (+ x 1))
 
-(testcase* "increment" (list
+(testcase* "increments numbers by 1" (list
     (assert eq? (increment 0) 1)
     (assert eq? (increment 12) 13)
 ))
@@ -17,27 +18,34 @@ scmunit is a lightweight test runner and assertion library written in MIT Scheme
 (scmunit-run*)
 ```
 
+Also, see another demonstration in [example.scm](example.scm).
+
+
 ## Reference
 
 ### `(assert predicate expression [arguments])`
 
-Executes `expression` and passes its return value to `predicate`, along with every `argument` (if there is any). The assertion is considered successful if `predicate` returns `#t`.
+Evaluates an expression against a predicate. The assertion is considered to be successful if the predicate returns true (`#t`).
+
+- `predicate` A predicate that takes the result of `expression` as first argument and `arguments` as subsequent arguments
+- `expression` The expression that you want to test
+- `arguments` See `predicate`
 
 ### `(testcase name [items])`
 
-Container for grouping assertions and/or other testcases, that are provided as list. Can be nested arbitrarily deep. `name` is a string for recognising the testcase in the test output.
+Container for grouping assertions and/or other testcases. Can be nested arbitrarily deep.
+
+- `name` a string for recognising the testcase in the test output of the runner
+- `items` a list of assertions and/or testcases
 
 ### `(testcase* ...)`
 
-Same as `(testcase ...)`, but it automatically registers the testcases with all its content, so that it gets picked up by the test runner. Supposed to be used for standalone testcases at top-level.
+Same as `(testcase ...)`, but it automatically registers the testcases with all its content, so that it gets picked up by the test runner. Supposed to be used at top-level.
 
 ### `(scmunit-run*)`
 
-Runs all testcases that had been registered via `(testcase* ...)`, displays the result and exits the program with status `0` or `1` (depending on whether there were failed tests).
+Runs all testcases that had been registered via `(testcase* ...)`, displays the result and exits the program with status `0` or `1` (depending on whether there were failed tests or not).
 
-### `(scmunit-run [testcase] callback)`
-
-Runs all test testcases that are passed in and invokes a callback of form `(lambda (text-output status-code) (...))`.
 
 ## FAQ
 
