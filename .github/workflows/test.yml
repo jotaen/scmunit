@@ -1,0 +1,16 @@
+name: Tests
+on: [push]
+
+jobs:
+  build:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Build project
+        run: docker build -t scmunit .
+      - name: Run core tests
+        run: docker run --rm scmunit test/spec.scm
+      - name: Run example tests
+        run: docker run --rm scmunit test/example.scm
