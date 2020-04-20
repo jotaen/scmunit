@@ -49,11 +49,12 @@
         (define (concat-paths ps) (fold-right (lambda (p a) (string-append p ": " a)) "" ps))
         (let ((c (first c:p)) (ps (second c:p)) (a (first a:i)) (i (second a:i)))
         (list (format #f
-            "~A\n~A) ~A  ~A   ->   (~A ~A~A)"
+            "~A\n~A) ~A\n   - evaluation: ~A -> ~A\n   - assertion: (~A ~A~A)"
             a
             i
             (concat-paths ps)
             (scmunit/assertion-expression c)
+            (scmunit/assertion-actual c)
             (scmunit/assertion-predicate c)
             (scmunit/assertion-actual c)
             (fold-left (lambda (x a) (format #f "~A ~A" x a)) "" (scmunit/assertion-arguments c))) (+ i 1)))) '("" 1) c:ps))
