@@ -34,36 +34,36 @@
     (set! *scmunit/testcases* (append *scmunit/testcases* (list (testcase name xs)))))
 
 (define (scmunit-run testcases callback)
-    (define (check-overview cs)
-        (fold-left (lambda (a c) (string-append a (if (scmunit/assertion-ok? c) "." "x"))) "" cs))
-    (define (check-runtime cs) (fold-right (lambda (c a) (+ a (scmunit/assertion-runtime c))) 0 cs))
-    (define (testcase-listing g)
+    (define (check-overview assertions)
+        (fold-left (lambda (res a) (string-append res (if (scmunit/assertion-ok? a) "." "x"))) "" assertions))
+    (define (check-runtime assertions) (fold-right (lambda (a res) (+ res (scmunit/assertion-runtime a))) 0 assertions))
+    (define (testcase-listing testcase)
         (string-append
-            "# " (scmunit/testcase-name g)
-            (if (< 0 (length (scmunit/testcase-assertions g)))
-                (format #f ": ~A (~Ams)" (check-overview (scmunit/testcase-assertions g)) (check-runtime (scmunit/testcase-assertions g)))
+            "# " (scmunit/testcase-name testcase)
+            (if (< 0 (length (scmunit/testcase-assertions testcase)))
+                (format #f ": ~A (~Ams)" (check-overview (scmunit/testcase-assertions testcase)) (check-runtime (scmunit/testcase-assertions testcase)))
                 "")))
-    (define (listing gs pref) (fold-left (lambda (a g)
-        (string-append a "\n" pref (testcase-listing g) " " (listing (scmunit/testcase-testcases g) (string-append pref "  ")))) "" gs))
-    (define (check-verbose c:ps) (fold-left (lambda (a:i c:p)
-        (define (concat-paths ps) (fold-right (lambda (p a) (string-append p ": " a)) "" ps))
-        (let ((c (first c:p)) (ps (second c:p)) (a (first a:i)) (i (second a:i)))
+    (define (listing testcases pref) (fold-left (lambda (res tc)
+        (string-append res "\n" pref (testcase-listing tc) " " (listing (scmunit/testcase-testcases tc) (string-append pref "  ")))) "" testcases))
+    (define (check-verbose assertion:paths) (fold-left (lambda (output:i a:ps)
+        (define (concat-paths ps) (fold-right (lambda (p res) (string-append p ": " res)) "" ps))
+        (let ((assertion (first a:ps)) (i (second output:i)))
         (list (format #f
             "~A\n~A) ~A\n   - evaluation: ~A -> ~A\n   - assertion: (~A ~A~A)"
-            a
+            (first output:i)
             i
-            (concat-paths ps)
-            (scmunit/assertion-expression c)
-            (scmunit/assertion-actual c)
-            (scmunit/assertion-predicate c)
-            (scmunit/assertion-actual c)
-            (fold-left (lambda (x a) (format #f "~A ~A" x a)) "" (scmunit/assertion-arguments c))) (+ i 1)))) '("" 1) c:ps))
-    (define (get-checks gs path) (fold-left (lambda (a g)
+            (concat-paths (second a:ps))
+            (scmunit/assertion-expression assertion)
+            (scmunit/assertion-actual assertion)
+            (scmunit/assertion-predicate assertion)
+            (scmunit/assertion-actual assertion)
+            (fold-left (lambda (res a) (format #f "~A ~A" res a)) "" (scmunit/assertion-arguments assertion))) (+ i 1)))) '("" 1) assertion:paths))
+    (define (get-checks testcases path) (fold-left (lambda (res g)
         (let ((current-path (append path (list (scmunit/testcase-name g)))))
         (append
-            a
+            res
             (get-checks (scmunit/testcase-testcases g) current-path)
-            (map (lambda (c) (list c current-path)) (scmunit/testcase-assertions g))))) () gs))
+            (map (lambda (c) (list c current-path)) (scmunit/testcase-assertions g))))) () testcases))
     (define (summary nr-all nr-failed) (format #f "~A checks ran: ~A passed, ~A failed" nr-all (- nr-all nr-failed) nr-failed))
     (let* (
         (all-checks (get-checks testcases ()))
