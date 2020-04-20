@@ -23,7 +23,7 @@ scmunit is a simple and lightweight test runner plus assertion library written i
 (scmunit-run*)
 ```
 
-Also, see another demonstration in [example.scm](example.scm).
+Also, see another demonstration in [test/example.scm](example.scm).
 
 
 ## Reference
