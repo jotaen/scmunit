@@ -1,6 +1,6 @@
 # scmunit – Unit testing for Scheme with ease
 
-scmunit is a simple and lightweight test runner plus assertion library written in and for MIT Scheme (R7RS). scmunit comes with the following features:
+*scmunit* is a simple and lightweight test runner plus assertion library written in and for MIT Scheme (R7RS). *scmunit* comes with the following features:
 
 - 🚀 Small footprint (100 lines of code, 4 kB)
 - 🐣 Dead simple API (4 functions – that’s all there is)
